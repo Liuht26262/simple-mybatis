@@ -1,7 +1,12 @@
 package com.tk.mybatis.session;
 
 import com.tk.mybatis.binding.MapperRegistry;
+import com.tk.mybatis.datasource.druid.DruidDataSourceFatory;
+import com.tk.mybatis.mapping.Environment;
 import com.tk.mybatis.mapping.MappedStatement;
+import com.tk.mybatis.transaction.jdbc.JdbcTransactionFactory;
+import com.tk.mybatis.type.TypeAliasRegistry;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +18,7 @@ import java.util.Map;
  * @Description mapper配置类
  */
 public class Configuration {
+
     /**
      * mapper注册机
      */
@@ -26,29 +32,59 @@ public class Configuration {
     protected Map<String, MappedStatement> mappedStatementMap = new HashMap<>();
 
 
-    public <T> void addMapper(Class<T> type){
+    /**
+     * 环境
+     */
+    protected Environment environment;
+
+    /**
+     * 别名注册机
+     */
+    protected TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+
+
+    /**
+     * 在创建的时候将事务以及数据源都注册到别名注册机中，方便后面直接从Configuration中获取
+     */
+    public Configuration() {
+        typeAliasRegistry.registryAlias("JDBC", JdbcTransactionFactory.class);
+        typeAliasRegistry.registryAlias("DRUID", DruidDataSourceFatory.class);
+    }
+
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+
+    public <T> void addMapper(Class<T> type) {
         mapperRegistry.addMapper(type);
     }
 
-    public void addMappers(String packagePath){
+    public void addMappers(String packagePath) {
         mapperRegistry.addMappers(packagePath);
     }
 
-    public boolean hasMapper(Class<?> type){
+    public boolean hasMapper(Class<?> type) {
         return mapperRegistry.hasMapper(type);
     }
 
-    public <T> T getMapper(Class<T> type, SqlSession sqlSession){
-        return mapperRegistry.getMapper(type,sqlSession);
+    public <T> T getMapper(Class<T> type, SqlSession sqlSession) {
+        return mapperRegistry.getMapper(type, sqlSession);
     }
 
-    public void addMappedstatement(MappedStatement ms){
-        System.out.println(ms.getId());
-        mappedStatementMap.put(ms.getId(),ms);
+    public void addMappedstatement(MappedStatement ms) {
+        mappedStatementMap.put(ms.getId(), ms);
     }
 
-    public MappedStatement getMappedstatement(String id){
+    public MappedStatement getMappedstatement(String id) {
         return mappedStatementMap.get(id);
     }
 
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public TypeAliasRegistry getTypeAliasRegistry() {
+        return typeAliasRegistry;
+    }
 }

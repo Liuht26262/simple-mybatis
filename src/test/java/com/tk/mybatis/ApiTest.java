@@ -3,6 +3,7 @@ package com.tk.mybatis;
 import com.tk.mybatis.binding.MapperProxyFactory;
 import com.tk.mybatis.dao.IUserDao;
 import com.tk.mybatis.io.Resources;
+import com.tk.mybatis.po.User;
 import com.tk.mybatis.session.SqlSession;
 import com.tk.mybatis.session.SqlSessionFactory;
 import com.tk.mybatis.session.SqlSessionFactoryBuilder;
@@ -78,8 +79,8 @@ public class ApiTest {
             IUserDao userDao = sqlSession.getMapper(IUserDao.class);
 
             //5、执行方法
-            String result = userDao.queryUserAge("10010");
-            log.info("执行结果：{}",result);
+            User result = userDao.queryUserById("1");
+            log.info("执行结果：{}",result.toString());
         } catch (IOException e) {
             e.printStackTrace();
         }

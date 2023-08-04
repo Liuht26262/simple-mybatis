@@ -1,11 +1,15 @@
 package com.tk.mybatis.builder.xml;
 
 import com.tk.mybatis.builder.BaseBuilder;
+import com.tk.mybatis.datasource.DataSourceFactory;
 import com.tk.mybatis.io.Resources;
+import com.tk.mybatis.mapping.BoundSql;
+import com.tk.mybatis.mapping.Environment;
 import com.tk.mybatis.mapping.MappedStatement;
 import com.tk.mybatis.mapping.SqlCommandType;
 import com.tk.mybatis.session.Configuration;
-import org.dom4j.Attribute;
+import com.tk.mybatis.transaction.TransactionFactory;
+import com.tk.mybatis.type.TypeAliasRegistry;
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
@@ -13,12 +17,10 @@ import org.dom4j.io.SAXReader;
 import org.xml.sax.InputSource;
 
 
+import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.Reader;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -29,6 +31,7 @@ import java.util.regex.Pattern;
  * @Description XML解析器
  */
 public class XMLConfigBuilder extends BaseBuilder {
+    private static final String COMPILE = "(#\\{(.*?)})";
     private Element root;
 
     public XMLConfigBuilder(Reader reader) {
@@ -51,10 +54,47 @@ public class XMLConfigBuilder extends BaseBuilder {
     public Configuration parser() {
         try{
             mapperElement(root.element("mappers"));
+            environmentElement(root.element("environments"));
         }catch (Exception e){
             throw new RuntimeException("Error parsing SQL Mapper Configuration. Cause: " + e, e);
         }
         return configuration;
+    }
+
+    /**
+     * 解析environment标签
+     * @param context
+     */
+    private void environmentElement(Element context) throws InstantiationException, IllegalAccessException {
+        String environmentType = context.attributeValue("default");
+        List<Element> environments = context.elements("environment");
+
+        for(Element element : environments){
+            String id = element.attributeValue("id");
+            //这里主要查看配置的默认是哪个数据源
+            if(environmentType.equals(id)){
+                TransactionFactory transactionFactory = (TransactionFactory) typeAliasRegistry.resolveAlias(element
+                        .element("transactionManager").attributeValue("type")).newInstance();
+                Element dataSourceElement = element.element("dataSource");
+                DataSourceFactory dataSourceFactory = (DataSourceFactory) typeAliasRegistry.resolveAlias(
+                        dataSourceElement.attributeValue("type")).newInstance();
+                List<Element> propertyList = dataSourceElement.elements("property");
+                Properties properties = new Properties();
+                for(Element property : propertyList){
+                    properties.setProperty(property.attributeValue("name"),property.attributeValue("value"));
+                }
+
+                //创建数据源
+                dataSourceFactory.setProperties(properties);
+                DataSource dataSource = dataSourceFactory.getDataSource();
+
+                //构建环境
+                Environment environment = new Environment.Builder(id).transactionFactory(transactionFactory)
+                        .datasource(dataSource).build();
+                configuration.setEnvironment(environment);
+
+            }
+        }
     }
 
     /**
@@ -80,7 +120,7 @@ public class XMLConfigBuilder extends BaseBuilder {
 
                 Map<Integer,String> parameterMap = new HashMap();
                 String sql = e.getText();
-                Pattern compile = Pattern.compile("(#\\{(.*?)})");
+                Pattern compile = Pattern.compile(COMPILE);
                 Matcher matcher = compile.matcher(sql);
                 for (int i = 0; matcher.find(); i++) {
                     //获取匹配项中的第一个匹配组 即完整的"#{}"格式
@@ -94,9 +134,10 @@ public class XMLConfigBuilder extends BaseBuilder {
                 String msId = nameSpace+"."+id;
                 String name = e.getName();
                 SqlCommandType sqlCommandType = SqlCommandType.valueOf(name.toUpperCase(Locale.ENGLISH));
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,
-                        parameterType, resultType, sql, parameterMap).build();
-                System.out.println("创建出来的mappedStatement "+ mappedStatement);
+
+                BoundSql boundSql = new BoundSql(sql, parameterType, resultType, parameterMap);
+                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,boundSql)
+                        .build();
                 //添加解析后的sql语句
                 configuration.addMappedstatement(mappedStatement);
             }

@@ -4,7 +4,6 @@ import com.tk.mybatis.session.SqlSession;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,7 +30,6 @@ public class MapperProxyFactory<T> {
         MapperProxy<T> mapperProxy = new MapperProxy<>(mapperInterface, sqlSession,mapperMethodMap);
         return (T) Proxy.newProxyInstance(mapperInterface.getClassLoader(),new Class[]{mapperInterface},
                 mapperProxy);
-
     }
 
 }

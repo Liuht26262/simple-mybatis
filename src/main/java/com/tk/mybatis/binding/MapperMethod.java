@@ -53,6 +53,7 @@ public class MapperMethod {
         public <T> SqlCommand(Class<T> mapperInterface, Method method, Configuration configuration) {
             String statement = mapperInterface.getName() + "." + method.getName();
             MappedStatement mappedStatement = configuration.getMappedstatement(statement);
+            System.out.println(configuration.toString());
             this.name = mappedStatement.getId();
             this.commandType = mappedStatement.getSqlCommandType();
         }
