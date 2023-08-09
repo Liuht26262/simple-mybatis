@@ -1,7 +1,9 @@
 package com.tk.mybatis.session;
 
 import com.tk.mybatis.binding.MapperRegistry;
+import com.tk.mybatis.datasource.Pooled.PooledDataSourceFactory;
 import com.tk.mybatis.datasource.druid.DruidDataSourceFatory;
+import com.tk.mybatis.datasource.unPooled.UnPooledDataSourceFactory;
 import com.tk.mybatis.mapping.Environment;
 import com.tk.mybatis.mapping.MappedStatement;
 import com.tk.mybatis.transaction.jdbc.JdbcTransactionFactory;
@@ -49,6 +51,8 @@ public class Configuration {
     public Configuration() {
         typeAliasRegistry.registryAlias("JDBC", JdbcTransactionFactory.class);
         typeAliasRegistry.registryAlias("DRUID", DruidDataSourceFatory.class);
+        typeAliasRegistry.registryAlias("UNPOOLED", UnPooledDataSourceFactory.class);
+        typeAliasRegistry.registryAlias("POOLED", PooledDataSourceFactory.class);
     }
 
     public void setEnvironment(Environment environment) {

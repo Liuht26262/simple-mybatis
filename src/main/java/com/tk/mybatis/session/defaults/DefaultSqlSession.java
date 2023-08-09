@@ -39,8 +39,9 @@ public class DefaultSqlSession implements SqlSession {
     public <T> T selectOne(String statement, Object parameter) {
         MappedStatement mappedstatement = configuration.getMappedstatement(statement);
         Environment environment = configuration.getEnvironment();
+        Connection connection = null;
         try {
-            Connection connection = environment.getDataSource().getConnection();
+            connection = environment.getDataSource().getConnection();
             BoundSql boundSql = mappedstatement.getBoundSql();
             PreparedStatement preparedStatement = connection.prepareStatement(boundSql.getSql());
             preparedStatement.setLong(1,Long.parseLong(((Object[])parameter)[0].toString()));
@@ -50,6 +51,12 @@ public class DefaultSqlSession implements SqlSession {
         } catch (SQLException | ClassNotFoundException throwables) {
             throwables.printStackTrace();
             return null;
+        } finally {
+            try {
+                connection.close();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
         }
 
 
@@ -67,7 +74,7 @@ public class DefaultSqlSession implements SqlSession {
         try {
             ResultSetMetaData metaData = resultSet.getMetaData();
             int columnCount = metaData.getColumnCount();
-            log.info("当前class [{}] 有[{}]列属性",clazz.getClass(),columnCount);
+//            log.info("当前class [{}] 有[{}]列属性",clazz.getClass(),columnCount);
             //遍历行值
             while (resultSet.next()){
                 T obj = (T)clazz.newInstance();
@@ -75,7 +82,7 @@ public class DefaultSqlSession implements SqlSession {
                     Object object = resultSet.getObject(i);
                     String columnName = metaData.getColumnName(i);
                     String methodName = "set"+columnName.substring(0,1).toUpperCase()+columnName.substring(1);
-                    log.info("当前正在转换的方法为[{}]",methodName);
+//                    log.info("当前正在转换的方法为[{}]",methodName);
                     Method method;
                     if(object instanceof Date){
                         method = clazz.getMethod(methodName,Date.class);
