@@ -1,5 +1,7 @@
 package com.tk.mybatis.datasource.Pooled;
 
+import org.slf4j.LoggerFactory;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -13,6 +15,7 @@ import java.sql.SQLException;
  * @Description 池化处理类，这里主要是关闭或者开启连接的操作
  */
 public class PooledConnection implements InvocationHandler {
+    private final static org.slf4j.Logger log = LoggerFactory.getLogger(PooledConnection.class);
     private final static String CLOSE = "close";
     private final static Class<?>[] IFACS = new Class<?>[]{Connection.class};
     private int hashCode = 0;
@@ -39,7 +42,7 @@ public class PooledConnection implements InvocationHandler {
         this.lastUsedTimestamp = System.currentTimeMillis();
         this.createdTimestamp = System.currentTimeMillis();
         this.valid = true;
-        this.proxyConnection = (Connection) Proxy.newProxyInstance(connection.getClass().getClassLoader()
+        this.proxyConnection = (Connection) Proxy.newProxyInstance(Connection.class.getClassLoader()
                 ,IFACS,this);
     }
 

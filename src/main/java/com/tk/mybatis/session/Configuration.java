@@ -4,10 +4,20 @@ import com.tk.mybatis.binding.MapperRegistry;
 import com.tk.mybatis.datasource.Pooled.PooledDataSourceFactory;
 import com.tk.mybatis.datasource.druid.DruidDataSourceFatory;
 import com.tk.mybatis.datasource.unPooled.UnPooledDataSourceFactory;
+import com.tk.mybatis.executor.BaseExecutor;
+import com.tk.mybatis.executor.Executor;
+import com.tk.mybatis.executor.SimpleExecutor;
+import com.tk.mybatis.executor.resultset.DefaultResultSetHandler;
+import com.tk.mybatis.executor.resultset.ResultSetHandler;
+import com.tk.mybatis.executor.statement.PrepareStatementHandler;
+import com.tk.mybatis.executor.statement.StatementHandler;
+import com.tk.mybatis.mapping.BoundSql;
 import com.tk.mybatis.mapping.Environment;
 import com.tk.mybatis.mapping.MappedStatement;
+import com.tk.mybatis.transaction.Transaction;
 import com.tk.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.tk.mybatis.type.TypeAliasRegistry;
+import sun.plugin2.main.server.ResultHandler;
 
 
 import java.util.HashMap;
@@ -90,5 +100,21 @@ public class Configuration {
 
     public TypeAliasRegistry getTypeAliasRegistry() {
         return typeAliasRegistry;
+    }
+
+    /**
+     * 创建结果集处理器
+     */
+    public ResultSetHandler newResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
+        return new DefaultResultSetHandler(executor, mappedStatement, boundSql);
+    }
+
+    public StatementHandler newStatementHandler(SimpleExecutor executor, MappedStatement mappedStatement,
+                                                Object parameter, ResultHandler handler, BoundSql boundSql) {
+        return new PrepareStatementHandler(executor,mappedStatement,parameter,handler,boundSql);
+    }
+
+    public Executor newExecutor(Transaction transaction) {
+        return new SimpleExecutor(this,transaction);
     }
 }

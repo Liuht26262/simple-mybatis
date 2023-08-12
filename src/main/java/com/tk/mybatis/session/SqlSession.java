@@ -1,12 +1,14 @@
 package com.tk.mybatis.session;
 
+import java.io.Closeable;
+
 /**
  * @Author liuht
  * @Date 2023/7/29 22:55
  * @Version 1.0
  * @Description 描述
  */
-public interface SqlSession {
+public interface SqlSession extends Closeable {
     /**
      * 根据指定的sql获取一条封装的对象数据
      * @param statement
