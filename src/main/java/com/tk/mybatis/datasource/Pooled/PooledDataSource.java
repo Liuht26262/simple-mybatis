@@ -383,8 +383,65 @@ public class PooledDataSource implements DataSource {
         this.expectedConnectionTypeCode = expectedConnectionTypeCode;
     }
 
+
+    public String getDriver() {
+        return unPooledDataSource.getDriver();
+    }
+
+    public String getUrl() {
+        return unPooledDataSource.getUrl();
+    }
+
+    public String getUsername() {
+        return unPooledDataSource.getUsername();
+    }
+
+    public String getPassword() {
+        return unPooledDataSource.getPassword();
+    }
+
+    public static org.slf4j.Logger getLog() {
+        return log;
+    }
+
+    public PoolState getState() {
+        return state;
+    }
+
+    public UnPooledDataSource getUnPooledDataSource() {
+        return unPooledDataSource;
+    }
+
+    public int getPoolMaximumActiveConnections() {
+        return poolMaximumActiveConnections;
+    }
+
+    public int getPoolMaximumIdleConnections() {
+        return poolMaximumIdleConnections;
+    }
+
+    public int getPoolMaximumCheckoutTime() {
+        return poolMaximumCheckoutTime;
+    }
+
+    public int getPoolTimeToWait() {
+        return poolTimeToWait;
+    }
+
+    public String getPoolPingQuery() {
+        return poolPingQuery;
+    }
+
+    public boolean isPoolPingEnabled() {
+        return poolPingEnabled;
+    }
+
+    public int getPoolPingConnectionsNotUsedFor() {
+        return poolPingConnectionsNotUsedFor;
+    }
+
     public void setDriver(String driver) {
-        unPooledDataSource.setDriverStr(driver);
+        unPooledDataSource.setDriver(driver);
         forceCloseAll();
     }
 
@@ -401,5 +458,33 @@ public class PooledDataSource implements DataSource {
     public void setPassword(String password) {
         unPooledDataSource.setPassword(password);
         forceCloseAll();
+    }
+
+    public void setPoolMaximumActiveConnections(int poolMaximumActiveConnections) {
+        this.poolMaximumActiveConnections = poolMaximumActiveConnections;
+    }
+
+    public void setPoolMaximumIdleConnections(int poolMaximumIdleConnections) {
+        this.poolMaximumIdleConnections = poolMaximumIdleConnections;
+    }
+
+    public void setPoolMaximumCheckoutTime(int poolMaximumCheckoutTime) {
+        this.poolMaximumCheckoutTime = poolMaximumCheckoutTime;
+    }
+
+    public void setPoolTimeToWait(int poolTimeToWait) {
+        this.poolTimeToWait = poolTimeToWait;
+    }
+
+    public void setPoolPingQuery(String poolPingQuery) {
+        this.poolPingQuery = poolPingQuery;
+    }
+
+    public void setPoolPingEnabled(boolean poolPingEnabled) {
+        this.poolPingEnabled = poolPingEnabled;
+    }
+
+    public void setPoolPingConnectionsNotUsedFor(int poolPingConnectionsNotUsedFor) {
+        this.poolPingConnectionsNotUsedFor = poolPingConnectionsNotUsedFor;
     }
 }

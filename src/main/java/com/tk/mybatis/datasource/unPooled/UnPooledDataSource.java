@@ -27,7 +27,7 @@ public class UnPooledDataSource implements DataSource {
     //用户名
     private String username;
     //驱动器全路径名
-    private String driverStr;
+    private String driver;
     //密码
     private String password;
     //默认的事务级别
@@ -169,18 +169,18 @@ public class UnPooledDataSource implements DataSource {
      * @throws SQLException
      */
     private synchronized void initializerDriver() throws SQLException {
-        if(!driverMap.containsKey(driverStr)){
+        if(!driverMap.containsKey(driver)){
             try {
-                Class<?> driver;
+                Class<?> driverClass;
                 if(driveClassLoad != null){
-                    driver = Class.forName(driverStr, true, driveClassLoad);
+                    driverClass = Class.forName(driver, true, driveClassLoad);
                 }else {
-                    driver = Resources.getClass(driverStr);
+                    driverClass = Resources.getClass(driver);
                 }
-                Driver driverInstance = (Driver) driver.newInstance();
+                Driver driverInstance = (Driver) driverClass.newInstance();
                 //加入驱动器管理器
                 DriverManager.registerDriver(new DriverProxy(driverInstance));
-                driverMap.put(driverStr,driverInstance);
+                driverMap.put(driver,driverInstance);
             } catch (Exception e) {
                 throw new SQLException("Error setting driver on UnpooledDataSource. Cause: " + e);
             }
@@ -218,12 +218,12 @@ public class UnPooledDataSource implements DataSource {
         this.username = username;
     }
 
-    public String getDriverStr() {
-        return driverStr;
+    public String getDriver() {
+        return driver;
     }
 
-    public synchronized void setDriverStr(String driverStr) {
-        this.driverStr = driverStr;
+    public synchronized void setDriver(String driver) {
+        this.driver = driver;
     }
 
     public String getPassword() {
