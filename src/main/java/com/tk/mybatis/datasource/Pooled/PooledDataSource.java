@@ -168,7 +168,6 @@ public class PooledDataSource implements DataSource {
                     }
                 }
 
-                //TODO 获得连接后需要进行有效性校验
                 //进行有效性校验
                 if(connection != null){
                     if(connection.isValid()){

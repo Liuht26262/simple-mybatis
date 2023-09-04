@@ -5,7 +5,6 @@ import com.tk.mybatis.reflection.invoker.Invoker;
 import com.tk.mybatis.reflection.invoker.MethodInvoker;
 import com.tk.mybatis.reflection.invoker.SetFieldInvoker;
 import com.tk.mybatis.reflection.property.PropertyNamer;
-import com.tk.mybatis.reflection.property.PropertyTokenizer;
 
 import java.lang.reflect.*;
 import java.util.*;

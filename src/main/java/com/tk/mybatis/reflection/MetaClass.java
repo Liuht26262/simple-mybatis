@@ -28,7 +28,7 @@ public class MetaClass {
         return new MetaClass(clazz);
     }
 
-    public static boolean isClassCacheEnable(){
+    public static boolean isClStassCacheEnable(){
         return Reflector.isClassCacheEnable();
     }
 

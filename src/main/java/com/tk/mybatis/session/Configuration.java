@@ -14,6 +14,13 @@ import com.tk.mybatis.executor.statement.StatementHandler;
 import com.tk.mybatis.mapping.BoundSql;
 import com.tk.mybatis.mapping.Environment;
 import com.tk.mybatis.mapping.MappedStatement;
+import com.tk.mybatis.reflection.MetaObject;
+import com.tk.mybatis.reflection.factory.DefaultObjectFactory;
+import com.tk.mybatis.reflection.factory.ObjectFactory;
+import com.tk.mybatis.reflection.wrapper.DefaultObjectWrapperFactory;
+import com.tk.mybatis.reflection.wrapper.ObjectWrapperFactory;
+import com.tk.mybatis.scripting.LanguageDriverRegistry;
+import com.tk.mybatis.scripting.xmltags.XMLLanguageDriver;
 import com.tk.mybatis.transaction.Transaction;
 import com.tk.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.tk.mybatis.type.TypeAliasRegistry;
@@ -21,7 +28,9 @@ import sun.plugin2.main.server.ResultHandler;
 
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @Author liuht
@@ -53,6 +62,19 @@ public class Configuration {
      * 别名注册机
      */
     protected TypeAliasRegistry typeAliasRegistry = new TypeAliasRegistry();
+    protected final LanguageDriverRegistry languageRegistry = new LanguageDriverRegistry();
+
+    //对象工厂和对象包装器
+    protected ObjectFactory objectFactory = new DefaultObjectFactory();
+    protected ObjectWrapperFactory objectWrapperFactory = new DefaultObjectWrapperFactory();
+
+    protected String databaseId;
+
+
+    /**
+     * 资源加载集合
+     */
+    protected final Set<String> loaderResources = new HashSet();
 
 
     /**
@@ -63,6 +85,7 @@ public class Configuration {
         typeAliasRegistry.registryAlias("DRUID", DruidDataSourceFatory.class);
         typeAliasRegistry.registryAlias("UNPOOLED", UnPooledDataSourceFactory.class);
         typeAliasRegistry.registryAlias("POOLED", PooledDataSourceFactory.class);
+        languageRegistry.setDefaultDriverClass(XMLLanguageDriver.class);
     }
 
     public void setEnvironment(Environment environment) {
@@ -116,5 +139,29 @@ public class Configuration {
 
     public Executor newExecutor(Transaction transaction) {
         return new SimpleExecutor(this,transaction);
+    }
+
+    public boolean isResourceLoaded(String resource) {
+        if(loaderResources.contains(resource)){
+            return true;
+        }
+        return false;
+    }
+
+    public void addLoadedResources(String resource){
+        loaderResources.add(resource);
+    }
+
+    public LanguageDriverRegistry getLanguageRegistry() {
+        return languageRegistry;
+    }
+
+    //创建元对象
+    public MetaObject newMetaObject(Object parameterObject) {
+        return MetaObject.forObject(parameterObject,objectFactory,objectWrapperFactory);
+    }
+
+    public Object getDatabaseId() {
+        return databaseId;
     }
 }

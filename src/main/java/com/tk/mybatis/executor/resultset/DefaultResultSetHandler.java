@@ -21,21 +21,17 @@ import java.util.List;
  */
 public class DefaultResultSetHandler implements ResultSetHandler{
     private BoundSql boundSql;
+    private final MappedStatement mappedStatement;
 
     public DefaultResultSetHandler(Executor executor, MappedStatement mappedStatement, BoundSql boundSql) {
         this.boundSql = boundSql;
+        this.mappedStatement = mappedStatement;
     }
 
     @Override
     public <E> List<E> handleResultSet(Statement statement) throws SQLException {
         ResultSet resultSet = statement.getResultSet();
-        try{
-            Class<?> resultType = Class.forName(boundSql.getResultType());
-            return  resultSetToObject(resultSet,resultType);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return resultSetToObject(resultSet,mappedStatement.getResultType());
     }
 
 

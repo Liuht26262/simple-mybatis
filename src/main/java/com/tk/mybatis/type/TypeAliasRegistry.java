@@ -1,6 +1,7 @@
 package com.tk.mybatis.type;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.tk.mybatis.io.Resources;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -37,7 +38,21 @@ public class TypeAliasRegistry {
     }
 
     public <T> Class<T> resolveAlias(String alias){
-        String key = alias.toLowerCase(Locale.ENGLISH);
-        return (Class<T>)typeAliasMap.get(key);
+        try{
+            if(alias == null){
+                return null;
+            }
+            Class<T> clazz;
+            String key = alias.toLowerCase(Locale.ENGLISH);
+            if(typeAliasMap.containsKey(key)){
+                clazz = (Class<T>) typeAliasMap.get(key);
+            }else {
+                clazz = (Class<T>) Resources.getClass(alias);
+            }
+
+            return clazz;
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException("Could not resolve type alias '" + alias + "'.  Cause: " + e, e);
+        }
     }
 }

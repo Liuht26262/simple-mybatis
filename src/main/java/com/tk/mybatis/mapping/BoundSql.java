@@ -1,5 +1,10 @@
 package com.tk.mybatis.mapping;
 
+import com.tk.mybatis.reflection.MetaObject;
+import com.tk.mybatis.session.Configuration;
+
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -11,33 +16,45 @@ import java.util.Map;
 public class BoundSql {
     //sql语句
     private String sql;
-    //入参
-    private String parameterType;
-    //出参
-    private String resultType;
-    //sql语句集合
-    private Map<Integer,String> parameterMappins;
 
-    public BoundSql(String sql, String parameterType, String resultType, Map<Integer, String> parameterMappins) {
+    private List<ParameterMapping> parameterMappings;
+
+    private Object parameterObject;
+
+    private Map<String,Object> additionalParmeters;
+
+    private MetaObject metaParameters;
+
+
+    public BoundSql(Configuration configuration, String sql, List<ParameterMapping> parameterMappings, Object parameterObject) {
         this.sql = sql;
-        this.parameterType = parameterType;
-        this.resultType = resultType;
-        this.parameterMappins = parameterMappins;
+        this.parameterMappings = parameterMappings;
+        this.parameterObject = parameterObject;
+        this.additionalParmeters = new HashMap<>();
+        this.metaParameters = configuration.newMetaObject(additionalParmeters);
     }
 
     public String getSql() {
         return sql;
     }
 
-    public String getParameterType() {
-        return parameterType;
+    public List<ParameterMapping> getParameterMappings() {
+        return parameterMappings;
     }
 
-    public String getResultType() {
-        return resultType;
+    public Object getParameterObject() {
+        return parameterObject;
     }
 
-    public Map<Integer, String> getParameterMappins() {
-        return parameterMappins;
+    public boolean hasAdditionalParameter(String name) {
+        return metaParameters.hasGetter(name);
+    }
+
+    public void setAdditionalParameter(String name, Object value) {
+        metaParameters.setValue(name, value);
+    }
+
+    public Object getAdditionalParameter(String name) {
+        return metaParameters.getValue(name);
     }
 }

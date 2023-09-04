@@ -24,16 +24,29 @@ public class MappedStatement {
      */
     private SqlCommandType sqlCommandType;
 
-    private BoundSql boundSql;
+    private SqlSource sqlSource;
+
+    Class<?> resultType;
+
+    MappedStatement(){ };
+
+    public Class<?> getResultType() {
+        return resultType;
+    }
+
+    public SqlSource getSqlSource() {
+        return sqlSource;
+    }
 
     public static class Builder{
         private MappedStatement mappedStatement = new MappedStatement();
 
-        public Builder(Configuration configuration, String id, SqlCommandType sqlCommandType, BoundSql boundSql) {
+        public Builder(Configuration configuration, String id, SqlCommandType sqlCommandType, SqlSource sqlSource,Class<?> resultType) {
             mappedStatement.configuration = configuration;
             mappedStatement.id = id;
             mappedStatement.sqlCommandType = sqlCommandType;
-            mappedStatement.boundSql = boundSql;
+            mappedStatement.sqlSource = sqlSource;
+            mappedStatement.resultType = resultType;
         }
 
         public MappedStatement build() {
@@ -67,11 +80,4 @@ public class MappedStatement {
         this.sqlCommandType = sqlCommandType;
     }
 
-    public BoundSql getBoundSql() {
-        return boundSql;
-    }
-
-    public void setBoundSql(BoundSql boundSql) {
-        this.boundSql = boundSql;
-    }
 }

@@ -19,6 +19,7 @@ import org.xml.sax.InputSource;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.Reader;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -99,52 +100,25 @@ public class XMLConfigBuilder extends BaseBuilder {
 
     /**
      * 解析mapper标签
+     *
+     *       <mappers>
+     *      	 <mapper resource="org/mybatis/builder/AuthorMapper.xml"/>
+     *      	 <mapper resource="org/mybatis/builder/BlogMapper.xml"/>
+     *      	 <mapper resource="org/mybatis/builder/PostMapper.xml"/>
+     *       </mappers>
+     *
      * @param mappers
      */
-    private void mapperElement(Element mappers) throws IOException, DocumentException, ClassNotFoundException {
+    private void mapperElement(Element mappers) throws Exception {
         List<Element> elements = mappers.elements("mapper");
         for(Element element : elements){
             String resource = element.attributeValue("resource");
-            //这里获取的才是mapper.xml
-            Reader resoucres = Resources.getResoucres(resource);
-            SAXReader saxReader = new SAXReader();
-            Document document = saxReader.read(new InputSource(resoucres));
-            Element rootElement = document.getRootElement();
-            String nameSpace = rootElement.attributeValue("namespace");
+            InputStream inpurStream = Resources.getAsResourceAsStream(resource);
 
-            List<Element> elementList = rootElement.elements("select");
-            for (Element e : elementList){
-                String id = e.attributeValue("id");
-                String parameterType = e.attributeValue("parameterType");
-                String resultType = e.attributeValue("resultType");
-
-                Map<Integer,String> parameterMap = new HashMap();
-                String sql = e.getText();
-                Pattern compile = Pattern.compile(COMPILE);
-                Matcher matcher = compile.matcher(sql);
-                for (int i = 0; matcher.find(); i++) {
-                    //获取匹配项中的第一个匹配组 即完整的"#{}"格式
-                    String g1 = matcher.group(1);
-                    //获取匹配项中第二个匹配组 即不包含"#{}"的参数
-                    String g2 = matcher.group(2);
-                    parameterMap.put(i, g2);
-                    //将所有的#{}替换成 ？ 以便后续使用预处理语句执行sql
-                    sql = sql.replace(g1, "?");
-                }
-                String msId = nameSpace+"."+id;
-                String name = e.getName();
-                SqlCommandType sqlCommandType = SqlCommandType.valueOf(name.toUpperCase(Locale.ENGLISH));
-
-                BoundSql boundSql = new BoundSql(sql, parameterType, resultType, parameterMap);
-                MappedStatement mappedStatement = new MappedStatement.Builder(configuration, msId, sqlCommandType,boundSql)
-                        .build();
-                //添加解析后的sql语句
-                configuration.addMappedstatement(mappedStatement);
-            }
-
-            //注册Mapper
-            configuration.addMapper(Resources.getClass(nameSpace));
-
+            //在每一个mapper里面都创建一个新的XMLMapperBuilder来解析
+            XMLMapperBuilder mapperParser = new XMLMapperBuilder(inpurStream,configuration,resource);
+            mapperParser.parse();
         }
+
     }
 }

@@ -35,7 +35,7 @@ public class DefaultSqlSession implements SqlSession {
     public <T> T selectOne(String statement, Object parameter) {
         MappedStatement mappedstatement = configuration.getMappedstatement(statement);
         List<T> list = executor.query(mappedstatement, parameter, Executor.NO_RESULT_HANDLER,
-                mappedstatement.getBoundSql());
+                mappedstatement.getSqlSource().getBoundSql(parameter));
 
         return list.get(0);
     }

@@ -109,7 +109,7 @@ public class ApiTest {
             //5、执行方法
             for (int i = 0; i < 50; i++) {
                 User result = userDao.queryUserById("1");
-                log.info("第[{}]次执行结果：{}",i,result.toString());
+                log.info("第[{}]次执行结果：{}",i+1,result.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();

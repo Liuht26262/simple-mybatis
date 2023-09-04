@@ -16,7 +16,7 @@ public class Resources {
         return new InputStreamReader(getAsResourceAsStream(resource));
     }
 
-    private static InputStream getAsResourceAsStream(String resource) throws IOException {
+    public static InputStream getAsResourceAsStream(String resource) throws IOException {
         ClassLoader[] classLoaders = getClassLoaders();
         for (ClassLoader classLoader : classLoaders){
             InputStream inputStream = classLoader.getResourceAsStream(resource);
