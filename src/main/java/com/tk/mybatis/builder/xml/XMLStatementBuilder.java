@@ -15,7 +15,7 @@ import java.util.Locale;
  * @Author liuht
  * @Date 2023/8/23 22:18
  * @Version 1.0
- * @Description 描述
+ * @Description XML语句构建起
  */
 public class XMLStatementBuilder extends BaseBuilder {
     private String currentNamespace;

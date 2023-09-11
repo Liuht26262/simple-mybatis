@@ -1,6 +1,7 @@
 package com.tk.mybatis.executor.statement;
 
 import com.tk.mybatis.executor.Executor;
+import com.tk.mybatis.executor.parameter.ParameterHandler;
 import com.tk.mybatis.mapping.BoundSql;
 import com.tk.mybatis.mapping.MappedStatement;
 import sun.plugin2.main.server.ResultHandler;
@@ -32,8 +33,7 @@ public class PrepareStatementHandler extends BaseStatementHandler{
 
     @Override
     public void parameterize(Statement statement) throws SQLException {
-        PreparedStatement preparedStatement = (PreparedStatement) statement;
-        preparedStatement.setLong(1,Long.parseLong(((Object[])parameter)[0].toString()));
+        parameterHandler.setParameters((PreparedStatement) statement);
     }
 
     @Override

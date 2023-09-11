@@ -22,7 +22,9 @@ public enum JdbcType {
     //varchar
     VARCHAR(Types.VARCHAR),
     //timeStamp
-    TIMESTAMP(Types.TIMESTAMP)
+    TIMESTAMP(Types.TIMESTAMP),
+    //char
+    CHAR(Types.CHAR);
     ;
     public int typeCode;
     public static Map<Integer,JdbcType> codeLookup = new HashMap<>();

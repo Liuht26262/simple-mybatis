@@ -2,6 +2,7 @@ package com.tk.mybatis.builder;
 
 import com.tk.mybatis.session.Configuration;
 import com.tk.mybatis.type.TypeAliasRegistry;
+import com.tk.mybatis.type.TypeHandlerRegistry;
 
 /**
  * @Author liuht
@@ -12,6 +13,7 @@ import com.tk.mybatis.type.TypeAliasRegistry;
 public abstract class BaseBuilder {
     protected Configuration configuration;
     protected TypeAliasRegistry typeAliasRegistry;
+    protected TypeHandlerRegistry typeHandlerRegistry;
 
     public TypeAliasRegistry getTypeAliasRegistry() {
         return typeAliasRegistry;
@@ -24,6 +26,7 @@ public abstract class BaseBuilder {
     public BaseBuilder(Configuration configuration){
         this.configuration = configuration;
         this.typeAliasRegistry = configuration.getTypeAliasRegistry();
+        this.typeHandlerRegistry = configuration.getTypeHandlerRegistry();
     }
     public Configuration getConfiguration(){
         return this.configuration;

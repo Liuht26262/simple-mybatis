@@ -28,7 +28,6 @@ public class RawSqlSource implements SqlSource{
         SqlSourceBuilder sqlSourceParser = new SqlSourceBuilder(configuration);
         Class<?> clazz = parameterType == null ? Object.class : parameterType;
         sqlSource = sqlSourceParser.parser(sql,clazz,new HashMap<>());
-
     }
 
     private static String getSql(Configuration configuration, SqlNode rootSqlNode) {
@@ -36,7 +35,6 @@ public class RawSqlSource implements SqlSource{
         rootSqlNode.apply(context);
         return context.getSql();
     }
-
 
     @Override
     public BoundSql getBoundSql(Object parameterObject) {

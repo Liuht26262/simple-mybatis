@@ -1,6 +1,7 @@
 package com.tk.mybatis.executor.statement;
 
 import com.tk.mybatis.executor.Executor;
+import com.tk.mybatis.executor.parameter.ParameterHandler;
 import com.tk.mybatis.executor.resultset.ResultSetHandler;
 import com.tk.mybatis.mapping.BoundSql;
 import com.tk.mybatis.mapping.MappedStatement;
@@ -24,6 +25,8 @@ public abstract class BaseStatementHandler implements StatementHandler{
 
     protected final Object parameter;
     protected final ResultSetHandler resultSetHandler;
+    protected final ParameterHandler parameterHandler;
+
     protected BoundSql boundSql;
 
     public BaseStatementHandler(Executor executor, MappedStatement mappedStatement, Object parameter,
@@ -34,6 +37,7 @@ public abstract class BaseStatementHandler implements StatementHandler{
         this.parameter = parameter;
         this.boundSql = boundSql;
         this.resultSetHandler = configuration.newResultSetHandler(executor,mappedStatement,boundSql);
+        this.parameterHandler = configuration.newParameterHandler(mappedStatement,parameter,boundSql);
     }
 
     /**

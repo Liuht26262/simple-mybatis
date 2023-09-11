@@ -14,6 +14,6 @@ public interface IUserDao {
      * @param id
      * @return
      */
-    User queryUserById(String id);
+    User queryUserById(Long id);
 
 }

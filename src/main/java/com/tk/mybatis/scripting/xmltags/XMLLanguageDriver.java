@@ -1,7 +1,11 @@
 package com.tk.mybatis.scripting.xmltags;
 
+import com.tk.mybatis.executor.parameter.ParameterHandler;
+import com.tk.mybatis.mapping.BoundSql;
+import com.tk.mybatis.mapping.MappedStatement;
 import com.tk.mybatis.mapping.SqlSource;
 import com.tk.mybatis.scripting.LanguageDriver;
+import com.tk.mybatis.scripting.defaults.DefaultParameterHandler;
 import com.tk.mybatis.session.Configuration;
 import org.dom4j.Element;
 
@@ -17,5 +21,10 @@ public class XMLLanguageDriver implements LanguageDriver {
         //用XMl脚本构建器解析
         XMLScriptBuilder xmlScriptBuilder = new XMLScriptBuilder(configuration,script,parameterTypeClass);
         return xmlScriptBuilder.parseScriptNode();
+    }
+
+    @Override
+    public ParameterHandler createParameterHandler(MappedStatement mappedStatement, Object parameter, BoundSql boundSql) {
+        return new DefaultParameterHandler(mappedStatement,parameter,boundSql);
     }
 }

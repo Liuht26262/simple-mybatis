@@ -7,6 +7,7 @@ import com.tk.mybatis.datasource.unPooled.UnPooledDataSourceFactory;
 import com.tk.mybatis.executor.BaseExecutor;
 import com.tk.mybatis.executor.Executor;
 import com.tk.mybatis.executor.SimpleExecutor;
+import com.tk.mybatis.executor.parameter.ParameterHandler;
 import com.tk.mybatis.executor.resultset.DefaultResultSetHandler;
 import com.tk.mybatis.executor.resultset.ResultSetHandler;
 import com.tk.mybatis.executor.statement.PrepareStatementHandler;
@@ -24,6 +25,7 @@ import com.tk.mybatis.scripting.xmltags.XMLLanguageDriver;
 import com.tk.mybatis.transaction.Transaction;
 import com.tk.mybatis.transaction.jdbc.JdbcTransactionFactory;
 import com.tk.mybatis.type.TypeAliasRegistry;
+import com.tk.mybatis.type.TypeHandlerRegistry;
 import sun.plugin2.main.server.ResultHandler;
 
 
@@ -75,6 +77,11 @@ public class Configuration {
      * 资源加载集合
      */
     protected final Set<String> loaderResources = new HashSet();
+
+    /**
+     * 类型处理器注册机
+     */
+    protected final TypeHandlerRegistry typeHandlerRegistry = new TypeHandlerRegistry();
 
 
     /**
@@ -163,5 +170,17 @@ public class Configuration {
 
     public Object getDatabaseId() {
         return databaseId;
+    }
+
+    public ParameterHandler newParameterHandler(MappedStatement mappedStatement, Object parameter, BoundSql boundSql) {
+        // 创建参数处理器
+        ParameterHandler parameterHandler = mappedStatement.getLang().createParameterHandler(mappedStatement, parameter, boundSql);
+
+        return parameterHandler;
+    }
+
+    //类型处理器注册机
+    public TypeHandlerRegistry getTypeHandlerRegistry() {
+        return typeHandlerRegistry;
     }
 }

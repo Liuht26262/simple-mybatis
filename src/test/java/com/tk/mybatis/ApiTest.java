@@ -9,7 +9,8 @@ import com.tk.mybatis.session.SqlSession;
 import com.tk.mybatis.session.SqlSessionFactory;
 import com.tk.mybatis.session.SqlSessionFactoryBuilder;
 import com.tk.mybatis.util.ClassScanner;
-import org.junit.jupiter.api.Test;
+import org.junit.Before;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +30,14 @@ import java.util.Set;
 //@SpringBootTest
 public class ApiTest {
     public static final Logger log= LoggerFactory.getLogger(ApiTest.class);
+
+    private SqlSession sqlSession ;
+
+    @Before
+    public void init() throws IOException{
+        SqlSessionFactory sqlSessionFactory = new SqlSessionFactoryBuilder().build(Resources.getResoucres("mybatis-config-datasource.xml"));
+        sqlSession = sqlSessionFactory.openSession();
+    }
 
     @Test
     public void mapperInterfaceProxyTest(){
@@ -82,7 +91,7 @@ public class ApiTest {
             IUserDao userDao = sqlSession.getMapper(IUserDao.class);
 
             //5、执行方法
-            User result = userDao.queryUserById("1");
+            User result = userDao.queryUserById(1L);
             log.info("执行结果：{}",result.toString());
         } catch (IOException e) {
             e.printStackTrace();
@@ -108,13 +117,21 @@ public class ApiTest {
 
             //5、执行方法
             for (int i = 0; i < 50; i++) {
-                User result = userDao.queryUserById("1");
+                User result = userDao.queryUserById(1L);
                 log.info("第[{}]次执行结果：{}",i+1,result.toString());
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void test_queryUserInfoById(){
+        IUserDao mapper = sqlSession.getMapper(IUserDao.class);
+        User user = mapper.queryUserById(1L);
+
+        log.info("查询结果：{}",user.toString());
     }
 
 
@@ -130,7 +147,6 @@ public class ApiTest {
         // 持续获得链接
         while (true) {
             Connection connection = pooledDataSource.getConnection();
-            System.out.println(connection);
             Thread.sleep(1000);
             // 注释掉/不注释掉测试
 //            connection.close();

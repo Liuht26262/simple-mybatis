@@ -2,6 +2,8 @@ package com.tk.mybatis.mapping;
 
 import com.tk.mybatis.session.Configuration;
 import com.tk.mybatis.type.JdbcType;
+import com.tk.mybatis.type.TypeHandler;
+import com.tk.mybatis.type.TypeHandlerRegistry;
 
 /**
  * @Author liuht
@@ -19,7 +21,11 @@ public class ParameterMapping {
 
     private JdbcType jdbcType;
 
+    private TypeHandler typeHandler;
+
     public ParameterMapping(){};
+
+
 
     public static class Builder{
         private ParameterMapping parameterMapping = new ParameterMapping();
@@ -41,6 +47,12 @@ public class ParameterMapping {
         }
 
         public ParameterMapping build(){
+            if(parameterMapping.typeHandler == null && parameterMapping.javaType != null){
+                Configuration configuration = parameterMapping.configuration;
+                TypeHandlerRegistry typeHandlerRegistry = configuration.getTypeHandlerRegistry();
+                parameterMapping.typeHandler = typeHandlerRegistry.getTypeHandler(parameterMapping.javaType,parameterMapping.getJdbcType());
+            }
+
             return parameterMapping;
         }
     }
@@ -59,5 +71,9 @@ public class ParameterMapping {
 
     public JdbcType getJdbcType() {
         return jdbcType;
+    }
+
+    public TypeHandler getTypeHandler() {
+        return typeHandler;
     }
 }
